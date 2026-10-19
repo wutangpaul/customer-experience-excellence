@@ -1,0 +1,39 @@
+{
+  "name": "customer-experience-excellence",
+  "version": "1.0.0",
+  "description": "A Claude Code skill for building and reviewing delightful, accessible ecommerce, booking, membership and lead-gen experiences.",
+  "bin": {
+    "customer-experience-excellence": "bin/install.mjs"
+  },
+  "files": [
+    "bin",
+    "SKILL.md",
+    "references",
+    "agents"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-skill",
+    "agent-skill",
+    "ecommerce",
+    "ux",
+    "accessibility",
+    "wcag",
+    "conversion",
+    "design-system"
+  ],
+  "homepage": "https://github.com/wutangpaul/customer-experience-excellence#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wutangpaul/customer-experience-excellence.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wutangpaul/customer-experience-excellence/issues"
+  },
+  "author": "Paul McClean",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -6,16 +6,38 @@ It teaches Claude to inspect your repository first, work within your existing de
 
 ## Install
 
-Pick one of the following. The directory must be named `customer-experience-excellence` so the skill resolves correctly.
+Run this from the root of the repository you want the skill in:
 
-**For one project** — run from the root of the repository you want the skill in:
+```bash
+npx customer-experience-excellence
+```
+
+That's it — the skill lands in `.claude/skills/customer-experience-excellence/`. To make it available in **every** project on your machine instead:
+
+```bash
+npx customer-experience-excellence --global
+```
+
+| Flag | Effect |
+|---|---|
+| `-g`, `--global` | Install into `~/.claude/skills` instead of the current project |
+| `--dir <path>` | Install into a specific skills directory |
+| `-f`, `--force` | Overwrite an existing installation (how you upgrade) |
+| `-h`, `--help` | Show usage |
+
+### Other ways to install
+
+<details>
+<summary>Clone with git, use a submodule, or download a ZIP</summary>
+
+**Clone into one project** — run from the repository root:
 
 ```bash
 git clone https://github.com/wutangpaul/customer-experience-excellence.git \
   .claude/skills/customer-experience-excellence
 ```
 
-**For every project on your machine:**
+**Clone for every project on your machine:**
 
 ```bash
 git clone https://github.com/wutangpaul/customer-experience-excellence.git \
@@ -30,13 +52,15 @@ git submodule add https://github.com/wutangpaul/customer-experience-excellence.g
 git commit -m "Add customer-experience-excellence skill"
 ```
 
-**Without git** — download the repository as a ZIP from GitHub, unzip it, and copy the folder to `.claude/skills/customer-experience-excellence/`.
-
-Then open Claude Code from that repository and run `/customer-experience-excellence`, or just describe a customer-experience task and let skill discovery pick it up.
+**Without git or npm** — download the repository as a ZIP from GitHub, unzip it, and copy the folder to `.claude/skills/customer-experience-excellence/`. The directory must keep that name for the skill to resolve.
 
 To update a cloned install: `git -C .claude/skills/customer-experience-excellence pull`.
 
+</details>
+
 ## Usage
+
+Open Claude Code from that repository and run `/customer-experience-excellence`, or just describe a customer-experience task and let skill discovery pick it up. To upgrade later, re-run the installer with `--force`.
 
 ```
 /customer-experience-excellence Improve our product detail page using existing components and tokens.
@@ -59,6 +83,7 @@ The skill runs in one of four modes — **Build**, **Review**, **Explore**, **Op
 | `references/benchmarks.md` | Inspiration references, with guidance on using them responsibly. |
 | `references/examples.md` | Example prompts and the behavior they should produce. |
 | `agents/openai.yaml` | Display metadata for agent surfaces that read this format. |
+| `bin/install.mjs` | The `npx` installer. Zero dependencies — it only copies files. |
 
 ## Accessibility release standard
 

@@ -23,6 +23,17 @@ Thanks for helping improve this skill. It is prose, not code — the bar is clar
 - `SKILL.md` — frontmatter (`name`, `description`) plus the operating instructions. The `description` is what triggers skill discovery, so edits there change when the skill fires.
 - `references/*.md` — loaded on demand by the workflow in `SKILL.md`. If you add a file, reference it from `SKILL.md` or it will never be read.
 
+## Releasing
+
+The skill is distributed both as a git repository and as an npm package providing the `npx customer-experience-excellence` installer.
+
+1. Bump the version: `npm version patch|minor|major` (content edits are usually `minor`).
+2. Confirm the tarball holds the skill and nothing else: `npm pack --dry-run`.
+3. `npm publish`
+4. `git push --follow-tags`
+
+`bin/install.mjs` must stay dependency-free — `npx` runs it on other people's machines, so every added dependency is a supply-chain risk they inherit.
+
 ## Reporting problems
 
 Open an issue describing the prompt you used, what Claude did, and what you expected instead. Behavioral reports are more useful than abstract suggestions.
