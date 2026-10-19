@@ -5,6 +5,7 @@ import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SKILL_NAME = "customer-experience-excellence";
+const COMMAND_NAMESPACE = "cex";
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 // Only these ship into the installed skill directory — not package.json or bin/.
@@ -19,19 +20,22 @@ if (has("-h", "--help")) {
   console.log(`
   ${SKILL_NAME} v${version}
 
-  Installs the Customer Experience Excellence skill for Claude Code.
+  Installs the Customer Experience Excellence skill for Claude Code,
+  along with its /${COMMAND_NAMESPACE}: slash commands.
 
   Usage
     npx ${SKILL_NAME} [options]
 
   Options
-    -g, --global     Install for every project (~/.claude/skills)
-        --dir <path> Install into a specific directory
+    -g, --global     Install for every project (~/.claude)
+        --dir <path> Install the skill into a specific skills directory
+                     (commands go to its sibling ../commands/${COMMAND_NAMESPACE})
+        --skill-only Install the skill without the /${COMMAND_NAMESPACE}: commands
     -f, --force      Overwrite an existing installation
     -v, --version    Print the version
     -h, --help       Show this message
 
-  By default the skill is installed into ./.claude/skills, so run it from
+  By default everything is installed into ./.claude, so run it from
   the root of the repository you want the skill available in.
 `);
   process.exit(0);
@@ -55,7 +59,14 @@ const skillsRoot =
       ? join(homedir(), ".claude", "skills")
       : join(process.cwd(), ".claude", "skills");
 
-const target = join(skillsRoot, SKILL_NAME);
+// Commands live beside the skills directory: .claude/skills -> .claude/commands/cex
+const commandsRoot = join(dirname(skillsRoot), "commands");
+
+const skillTarget = join(skillsRoot, SKILL_NAME);
+const commandTarget = join(commandsRoot, COMMAND_NAMESPACE);
+const commandSource = join(PACKAGE_ROOT, "commands", COMMAND_NAMESPACE);
+
+const withCommands = !has("--skill-only") && existsSync(commandSource);
 
 function copyInto(src, dest) {
   if (statSync(src).isDirectory()) {
@@ -66,35 +77,46 @@ function copyInto(src, dest) {
   }
 }
 
-if (existsSync(target)) {
-  if (!has("-f", "--force")) {
-    console.error(`Error: ${target} already exists.`);
-    console.error("Re-run with --force to overwrite it.");
-    process.exit(1);
-  }
-  rmSync(target, { recursive: true, force: true });
+const existing = [skillTarget, withCommands ? commandTarget : null].filter(
+  (p) => p && existsSync(p),
+);
+
+if (existing.length && !has("-f", "--force")) {
+  for (const path of existing) console.error(`Error: ${path} already exists.`);
+  console.error("Re-run with --force to overwrite.");
+  process.exit(1);
 }
 
 try {
-  mkdirSync(target, { recursive: true });
+  for (const path of existing) rmSync(path, { recursive: true, force: true });
+
+  mkdirSync(skillTarget, { recursive: true });
   for (const item of PAYLOAD) {
     const src = join(PACKAGE_ROOT, item);
-    if (existsSync(src)) copyInto(src, join(target, item));
+    if (existsSync(src)) copyInto(src, join(skillTarget, item));
   }
+
+  if (withCommands) copyInto(commandSource, commandTarget);
 } catch (err) {
-  console.error(`Error: could not write to ${target}`);
+  console.error("Error: could not complete the installation.");
   console.error(err.message);
   process.exit(1);
 }
 
 const scope = has("-g", "--global") ? "every project on this machine" : "this repository";
+const commands = withCommands
+  ? readdirSync(commandTarget)
+      .filter((f) => f.endsWith(".md"))
+      .map((f) => `/${COMMAND_NAMESPACE}:${f.replace(/\.md$/, "")}`)
+      .join("  ")
+  : null;
 
 console.log(`
   Installed ${SKILL_NAME} v${version}
-  → ${target}
+  → ${skillTarget}${withCommands ? `\n  → ${commandTarget}` : ""}
 
   Available in ${scope}.
-
+${commands ? `\n  Commands\n    ${commands}\n` : ""}
   Next: open Claude Code here and run
-    /${SKILL_NAME} Review the checkout flow for mobile friction and accessibility.
+    ${withCommands ? `/${COMMAND_NAMESPACE}:review` : `/${SKILL_NAME}`} Review the checkout flow for mobile friction and accessibility.
 `);

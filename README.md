@@ -12,7 +12,7 @@ Run this from the root of the repository you want the skill in:
 npx customer-experience-excellence
 ```
 
-That's it — the skill lands in `.claude/skills/customer-experience-excellence/`. To make it available in **every** project on your machine instead:
+That's it — the skill lands in `.claude/skills/customer-experience-excellence/` and the `/cex:` slash commands in `.claude/commands/cex/`. To make them available in **every** project on your machine instead:
 
 ```bash
 npx customer-experience-excellence --global
@@ -20,8 +20,9 @@ npx customer-experience-excellence --global
 
 | Flag | Effect |
 |---|---|
-| `-g`, `--global` | Install into `~/.claude/skills` instead of the current project |
-| `--dir <path>` | Install into a specific skills directory |
+| `-g`, `--global` | Install into `~/.claude` instead of the current project |
+| `--dir <path>` | Install the skill into a specific skills directory (commands go to its sibling `../commands/cex`) |
+| `--skill-only` | Install the skill without the `/cex:` commands |
 | `-f`, `--force` | Overwrite an existing installation (how you upgrade) |
 | `-h`, `--help` | Show usage |
 
@@ -56,26 +57,49 @@ git commit -m "Add customer-experience-excellence skill"
 
 To update a cloned install: `git -C .claude/skills/customer-experience-excellence pull`.
 
+**Note on the `/cex:` commands.** Claude Code only discovers slash commands under `.claude/commands/`, so a clone or ZIP copy gives you the skill but not the commands. Link or copy them across afterwards:
+
+```bash
+mkdir -p .claude/commands
+cp -R .claude/skills/customer-experience-excellence/commands/cex .claude/commands/cex
+```
+
 </details>
 
 ## Usage
 
-Open Claude Code from that repository and run `/customer-experience-excellence`, or just describe a customer-experience task and let skill discovery pick it up. To upgrade later, re-run the installer with `--force`.
+Open Claude Code from that repository and run a `/cex:` command, or just describe a customer-experience task and let skill discovery pick it up. To upgrade later, re-run the installer with `--force`.
 
 ```
-/customer-experience-excellence Improve our product detail page using existing components and tokens.
-/customer-experience-excellence Review the booking flow for mobile friction and accessibility.
-/customer-experience-excellence Design and implement an account membership upgrade flow.
-/customer-experience-excellence Audit this PR for customer experience regressions.
+/cex:build Improve our product detail page using existing components and tokens.
+/cex:review Review the booking flow for mobile friction and accessibility.
+/cex:explore How customers choose between our membership tiers.
+/cex:optimize Checkout step 2 — we're losing people at the shipping form.
+/cex:a11y The appointment calendar
+/cex:rubric PR 412
+/cex:journey Buying a subscription with a hardware device
 ```
 
-The skill runs in one of four modes — **Build**, **Review**, **Explore**, **Optimize** — inferred from your request. See `references/examples.md` for what good output looks like in each.
+### Commands
+
+| Command | What it does |
+|---|---|
+| `/cex:build` | Create or change a customer-facing UI or journey, with complete states and verification. |
+| `/cex:review` | Critique code, a PR, a screenshot or a design; prioritized findings with evidence. Defaults to your current changes. |
+| `/cex:explore` | Propose 2–3 genuinely differentiated directions before any implementation. |
+| `/cex:optimize` | Improve a defined funnel, separating hypotheses from measured outcomes. |
+| `/cex:a11y` | Run the WCAG 2.2 Level AA release gate over the changed scope. |
+| `/cex:rubric` | Score work across the eight review dimensions with severities and a ship verdict. |
+| `/cex:journey` | Map a journey end-to-end — entry, hesitation, confirmation, post-purchase. |
+
+Each command loads the skill and pins it to one of its four operating modes — **Build**, **Review**, **Explore**, **Optimize** — so you skip the mode inference. `/customer-experience-excellence` still works if you'd rather let it infer. See `references/examples.md` for what good output looks like in each mode.
 
 ## What's in here
 
 | Path | Purpose |
 |---|---|
 | `SKILL.md` | The skill itself: workflow, principles, architecture rules, response contracts. |
+| `commands/cex/` | The seven `/cex:` slash commands, installed to `.claude/commands/cex/`. |
 | `references/accessibility.md` | WCAG 2.2 AA release gate and required verification steps. Always loaded for customer-facing work. |
 | `references/journey-patterns.md` | Playbooks for ecommerce, booking, membership/subscription and lead-gen journeys. |
 | `references/visual-craft.md` | Visual direction, systematic execution and anti-patterns. |

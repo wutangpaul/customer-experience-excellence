@@ -43,6 +43,10 @@ jobs:
           test -f "$RUNNER_TEMP/skills/customer-experience-excellence/SKILL.md"
           test -f "$RUNNER_TEMP/skills/customer-experience-excellence/references/accessibility.md"
           test ! -e "$RUNNER_TEMP/skills/customer-experience-excellence/package.json"
+          for cmd in build review explore optimize a11y rubric journey; do
+            test -f "$RUNNER_TEMP/commands/cex/$cmd.md" || {
+              echo "::error::missing command $cmd.md"; exit 1; }
+          done
 
       - name: Publish
         run: npm publish
