@@ -27,10 +27,16 @@ Thanks for helping improve this skill. It is prose, not code — the bar is clar
 
 The skill is distributed both as a git repository and as an npm package providing the `npx customer-experience-excellence` installer.
 
-1. Bump the version: `npm version patch|minor|major` (content edits are usually `minor`).
-2. Confirm the tarball holds the skill and nothing else: `npm pack --dry-run`.
-3. `npm publish`
-4. `git push --follow-tags`
+Releases publish from CI via npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC). There is no npm token anywhere — not in the repo, not in GitHub secrets, not on your machine:
+
+```bash
+npm version patch|minor|major   # content edits are usually `minor`
+git push --follow-tags
+```
+
+Pushing the `v*` tag triggers `.github/workflows/release.yml`, which checks the tag against `package.json`, smoke-tests the installer, and publishes. Watch the Actions tab; if the job fails the version is never published, so you can fix and re-tag.
+
+To preview what would ship: `npm pack --dry-run`.
 
 `bin/install.mjs` must stay dependency-free — `npx` runs it on other people's machines, so every added dependency is a supply-chain risk they inherit.
 
