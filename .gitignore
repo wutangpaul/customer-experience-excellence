@@ -1,0 +1,14 @@
+# Claude Code local state
+.claude/.cc-writes/
+.claude/settings.local.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Build / packaging artifacts
+skill.zip
+*.zip
