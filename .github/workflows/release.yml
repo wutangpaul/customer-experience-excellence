@@ -39,14 +39,30 @@ jobs:
 
       - name: Smoke-test the installer
         run: |
+          SKILL="$RUNNER_TEMP/skills/customer-experience-excellence"
           node bin/install.mjs --dir "$RUNNER_TEMP/skills"
-          test -f "$RUNNER_TEMP/skills/customer-experience-excellence/SKILL.md"
-          test -f "$RUNNER_TEMP/skills/customer-experience-excellence/references/accessibility.md"
-          test ! -e "$RUNNER_TEMP/skills/customer-experience-excellence/package.json"
-          for cmd in build review explore optimize a11y rubric journey; do
+          test -f "$SKILL/SKILL.md"
+          test -f "$SKILL/references/accessibility.md"
+          test -f "$SKILL/.cex-manifest.json"
+          test ! -e "$SKILL/package.json"
+          test ! -e "$SKILL/README.md"
+          for cmd in build review explore optimize a11y rubric journey modernize help; do
             test -f "$RUNNER_TEMP/commands/cex/$cmd.md" || {
               echo "::error::missing command $cmd.md"; exit 1; }
           done
+
+          # An upgrade must never silently discard a local edit.
+          echo "# local edit" >> "$SKILL/references/review-rubric.md"
+          if node bin/install.mjs --dir "$RUNNER_TEMP/skills" --force; then
+            echo "::error::--force overwrote a locally edited file without consent"; exit 1
+          fi
+          grep -q "# local edit" "$SKILL/references/review-rubric.md" || {
+            echo "::error::local edit was destroyed"; exit 1; }
+
+          # ...but --yes is still an explicit override, and --uninstall cleans up.
+          node bin/install.mjs --dir "$RUNNER_TEMP/skills" --force --yes
+          node bin/install.mjs --dir "$RUNNER_TEMP/skills" --uninstall --yes
+          test ! -e "$SKILL"
 
       - name: Publish
         run: npm publish

@@ -7,7 +7,7 @@
 - Use authentic product imagery and context-rich demonstrations; avoid fake testimonials or invented social proof.
 
 ## Systematic execution
-- Reuse brand typography, spacing, radii, semantic colors and component states from repository tokens.
+- Reuse brand typography, spacing, radii, semantic colors and component states from repository tokens. In Tailwind projects those tokens live in `@theme` (v4) — add a token rather than reaching for an arbitrary value. See `tailwind-ui-systems.md`.
 - Use typography scale, comfortable measure, alignment and rhythm to create perceived quality.
 - Create clear distinction among primary, secondary, tertiary and destructive actions.
 - Use micro-interactions for cause/effect: selection, success, validation, progress and transitions.

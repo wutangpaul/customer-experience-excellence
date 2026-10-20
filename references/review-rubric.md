@@ -12,6 +12,8 @@ Score each dimension 0–4: 0 broken/harmful, 1 poor, 2 adequate, 3 strong, 4 ex
 | Responsive quality | Does it work across small screens, touch, zoom and localization? |
 | Performance | Are loading, responsiveness and visual stability protected? |
 | System consistency | Does it follow existing components, tokens and architecture? |
+| Code economy | Is this the smallest change that does the job — reusing what exists, adding no speculative abstraction, dependency or dead code? |
+| Code legibility | Could a fresh agent with no session context open these files, infer the customer intent, and safely extend the work? |
 
 ## Severity
 - **Blocker:** prevents core task; deceptive billing; severe accessibility barrier; data loss/security or privacy issue.
@@ -28,6 +30,10 @@ Known WCAG 2.2 Level A/AA failures in changed scope are release blockers. Consul
 - Pricing, recurring terms and consent are accurate and clear.
 - Mobile and desktop layouts are checked.
 - Existing design system and brand conventions are respected.
+- The diff is minimal and intentional: no unrelated edits, duplicated components, single-caller abstractions, unjustified dependencies, dead code or stray TODOs/commented-out alternatives.
+- Names, contracts and file placement make the customer intent recoverable from the code alone.
+- Stack-specific standards in `stack-craft.md` are met for the repository's framework.
+- Styling matches the installed Tailwind generation and the repository's existing component system, using theme tokens rather than one-off arbitrary values. See `tailwind-ui-systems.md`.
 - Relevant tests/build checks run; unrun checks are disclosed.
 - Proposed metric/experiment is linked to the actual customer outcome.
 

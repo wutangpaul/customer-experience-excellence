@@ -9,9 +9,12 @@ $ARGUMENTS
 
 Follow the skill's mandatory workflow in order. Do not skip step 1 — inspect the real repository stack, design tokens, components and comparable flows before writing anything, and never claim to have inspected files you did not open.
 
+Load references as the skill's step 3 directs. They live in the skill's own directory alongside `SKILL.md`, not at the repository root.
+
 Required for this mode:
-- Read `references/accessibility.md` (always, for customer-facing work) plus the relevant section of `references/journey-patterns.md` and `references/visual-craft.md`.
+- Detect the installed Tailwind and component-system versions first and match their APIs. Reuse the repository's tokens and existing component system; never introduce a second one.
 - Propose the smallest coherent improvement; prefer existing components and tokens over new ones.
+- Apply the skill's **Code standards**: smallest honest diff, reuse before writing, no speculative abstraction or unjustified dependency, delete what the change makes dead, and leave code a fresh agent can read and extend without this session's context.
 - Implement complete states: loading, empty, error, validation, success, unavailable and recovery.
 - Verify with the repository's own lint, type, test and build commands; check mobile and desktop widths, keyboard, focus, labels, contrast and reduced motion.
 

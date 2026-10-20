@@ -3,7 +3,7 @@ description: Map a customer journey end-to-end — entry, hesitation, confirmati
 argument-hint: [the journey, e.g. "buying a subscription with a hardware device"]
 ---
 
-Invoke the `customer-experience-excellence` skill, read the relevant section of `references/journey-patterns.md`, then map this journey:
+Invoke the `customer-experience-excellence` skill, read the relevant section of `references/journey-patterns.md` — it sits in the skill's own directory alongside `SKILL.md`, not at the repository root — then map this journey:
 
 $ARGUMENTS
 
