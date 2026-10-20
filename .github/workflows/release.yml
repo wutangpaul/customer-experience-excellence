@@ -39,29 +39,36 @@ jobs:
 
       - name: Smoke-test the installer
         run: |
-          SKILL="$RUNNER_TEMP/skills/customer-experience-excellence"
-          node bin/install.mjs --dir "$RUNNER_TEMP/skills"
+          # Mirror a real install: commands are only discoverable under .claude.
+          SKILLS="$RUNNER_TEMP/.claude/skills"
+          SKILL="$SKILLS/customer-experience-excellence"
+
+          node bin/install.mjs --dir "$SKILLS" | tee "$RUNNER_TEMP/install.log"
           test -f "$SKILL/SKILL.md"
           test -f "$SKILL/references/accessibility.md"
           test -f "$SKILL/.cex-manifest.json"
           test ! -e "$SKILL/package.json"
           test ! -e "$SKILL/README.md"
           for cmd in build review explore optimize a11y rubric journey modernize help; do
-            test -f "$RUNNER_TEMP/commands/cex/$cmd.md" || {
+            test -f "$RUNNER_TEMP/.claude/commands/cex/$cmd.md" || {
               echo "::error::missing command $cmd.md"; exit 1; }
           done
+          # A correct install has nothing to warn about.
+          if grep -q "Warning:" "$RUNNER_TEMP/install.log"; then
+            echo "::error::unexpected warning from a valid install"; cat "$RUNNER_TEMP/install.log"; exit 1
+          fi
 
           # An upgrade must never silently discard a local edit.
           echo "# local edit" >> "$SKILL/references/review-rubric.md"
-          if node bin/install.mjs --dir "$RUNNER_TEMP/skills" --force; then
+          if node bin/install.mjs --dir "$SKILLS" --force; then
             echo "::error::--force overwrote a locally edited file without consent"; exit 1
           fi
           grep -q "# local edit" "$SKILL/references/review-rubric.md" || {
             echo "::error::local edit was destroyed"; exit 1; }
 
           # ...but --yes is still an explicit override, and --uninstall cleans up.
-          node bin/install.mjs --dir "$RUNNER_TEMP/skills" --force --yes
-          node bin/install.mjs --dir "$RUNNER_TEMP/skills" --uninstall --yes
+          node bin/install.mjs --dir "$SKILLS" --force --yes
+          node bin/install.mjs --dir "$SKILLS" --uninstall --yes
           test ! -e "$SKILL"
 
       - name: Publish
